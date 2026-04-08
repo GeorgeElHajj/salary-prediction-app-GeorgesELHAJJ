@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
@@ -12,7 +14,10 @@ st.set_page_config(
     layout="wide",
 )
 
-FASTAPI_PREDICT_URL = "http://127.0.0.1:8000/predict"
+FASTAPI_PREDICT_URL = os.getenv(
+    "API_URL",
+    "http://127.0.0.1:8000/predict"
+)
 
 EXPERIENCE_LABELS = {
     "EN": "Entry-level",
@@ -111,6 +116,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+def load_all_job_titles():
+    import pandas as pd
+
+    df = pd.read_csv("data/raw/ds_salaries.csv")
+    return sorted(df["job_title"].dropna().unique().tolist())
 
 @st.cache_resource
 def init_supabase():
@@ -206,11 +216,7 @@ def render_live_prediction(predictions_df: pd.DataFrame):
     country_options = get_country_options(predictions_df)
     default_country_index = country_options.index("US") if "US" in country_options else 0
 
-    job_title_options = (
-        sorted(predictions_df["job_title"].dropna().unique().tolist())
-        if not predictions_df.empty and "job_title" in predictions_df.columns
-        else ["Data Scientist"]
-    )
+    job_title_options = load_all_job_titles()
 
     with st.form("live_prediction_form"):
         col1, col2 = st.columns(2)

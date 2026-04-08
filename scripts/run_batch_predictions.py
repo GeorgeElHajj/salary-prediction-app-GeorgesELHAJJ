@@ -4,8 +4,12 @@ import json
 import pandas as pd
 import requests
 
+import os
 
-API_URL = "http://127.0.0.1:8000/predict"
+API_URL = os.getenv(
+    "API_URL",
+    "http://127.0.0.1:8000/predict"
+)
 OUTPUT_DIR = Path("artifacts/predictions")
 OUTPUT_CSV = OUTPUT_DIR / "predictions.csv"
 OUTPUT_JSON = OUTPUT_DIR / "predictions.json"

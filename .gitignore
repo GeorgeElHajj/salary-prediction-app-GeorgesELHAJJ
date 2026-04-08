@@ -9,6 +9,4 @@ env/
 data/raw/
 data/processed/
 
-artifacts/*.pkl
-artifacts/*.joblib
 artifacts/charts/

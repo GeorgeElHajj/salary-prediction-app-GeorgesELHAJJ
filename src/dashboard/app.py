@@ -335,27 +335,48 @@ def render_chart(filtered_df: pd.DataFrame):
         st.info("No prediction data available to plot.")
         return
 
-    chart_df = (
-        filtered_df.groupby("experience_level")["predicted_salary_usd"]
-        .mean()
-        .reindex(["EN", "MI", "SE", "EX"])
-        .dropna()
-    )
+    chart_col_1, chart_col_2 = st.columns(2)
 
-    if chart_df.empty:
-        st.info("Not enough filtered data to build the chart.")
-        return
+    with chart_col_1:
+        experience_chart_df = (
+            filtered_df.groupby("experience_level")["predicted_salary_usd"]
+            .mean()
+            .reindex(["EN", "MI", "SE", "EX"])
+            .dropna()
+        )
 
-    fig, ax = plt.subplots(figsize=(8, 4.5))
-    chart_df.plot(kind="bar", ax=ax)
-    ax.set_title("Average Predicted Salary by Experience Level")
-    ax.set_xlabel("Experience Level")
-    ax.set_ylabel("Salary (USD)")
-    ax.tick_params(axis="x", rotation=0)
-    plt.tight_layout()
+        if not experience_chart_df.empty:
+            fig, ax = plt.subplots(figsize=(7, 4.5))
+            experience_chart_df.plot(kind="bar", ax=ax)
+            ax.set_title("Average Salary by Experience Level")
+            ax.set_xlabel("Experience Level")
+            ax.set_ylabel("Salary (USD)")
+            ax.tick_params(axis="x", rotation=0)
+            plt.tight_layout()
+            st.pyplot(fig)
+            plt.close(fig)
+        else:
+            st.info("Not enough data to build the experience-level chart.")
 
-    st.pyplot(fig)
-    plt.close(fig)
+    with chart_col_2:
+        job_chart_df = (
+            filtered_df.groupby("job_title")["predicted_salary_usd"]
+            .mean()
+            .sort_values(ascending=False)
+            .head(5)
+        )
+
+        if not job_chart_df.empty:
+            fig, ax = plt.subplots(figsize=(7, 4.5))
+            job_chart_df.sort_values().plot(kind="barh", ax=ax)
+            ax.set_title("Top 5 Job Titles by Predicted Salary")
+            ax.set_xlabel("Salary (USD)")
+            ax.set_ylabel("Job Title")
+            plt.tight_layout()
+            st.pyplot(fig)
+            plt.close(fig)
+        else:
+            st.info("Not enough data to build the job-title chart.")
 
     st.markdown("---")
 

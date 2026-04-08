@@ -99,6 +99,51 @@ COUNTRY_LABELS = {
     "VN": "Vietnam",
 }
 
+JOB_TITLE_OPTIONS = [
+    "3D Computer Vision Researcher",
+    "AI Scientist",
+    "Analytics Engineer",
+    "Applied Data Scientist",
+    "Applied Machine Learning Scientist",
+    "BI Data Analyst",
+    "Big Data Architect",
+    "Big Data Engineer",
+    "Business Data Analyst",
+    "Computer Vision Engineer",
+    "Data Analyst",
+    "Data Analytics Engineer",
+    "Data Analytics Lead",
+    "Data Analytics Manager",
+    "Data Architect",
+    "Data Engineer",
+    "Data Engineering Manager",
+    "Data Scientist",
+    "Director of Data Engineering",
+    "Director of Data Science",
+    "ETL Developer",
+    "Finance Data Analyst",
+    "Financial Data Analyst",
+    "Head of Data",
+    "Head of Data Science",
+    "Lead Data Analyst",
+    "Lead Data Engineer",
+    "Lead Data Scientist",
+    "Lead Machine Learning Engineer",
+    "Machine Learning Developer",
+    "Machine Learning Engineer",
+    "Machine Learning Infrastructure Engineer",
+    "Machine Learning Manager",
+    "Machine Learning Scientist",
+    "Marketing Data Analyst",
+    "ML Engineer",
+    "NLP Engineer",
+    "Principal Data Analyst",
+    "Principal Data Engineer",
+    "Principal Data Scientist",
+    "Product Data Analyst",
+    "Research Scientist",
+    "Staff Data Scientist",
+]
 
 st.markdown(
     """
@@ -122,12 +167,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-def load_all_job_titles():
-    import pandas as pd
-
-    df = pd.read_csv("data/raw/ds_salaries.csv")
-    return sorted(df["job_title"].dropna().unique().tolist())
 
 @st.cache_resource
 def init_supabase():
@@ -223,7 +262,7 @@ def render_live_prediction(predictions_df: pd.DataFrame):
     country_options = get_country_options(predictions_df)
     default_country_index = country_options.index("US") if "US" in country_options else 0
 
-    job_title_options = load_all_job_titles()
+    job_title_options = JOB_TITLE_OPTIONS
 
     with st.form("live_prediction_form"):
         col1, col2 = st.columns(2)

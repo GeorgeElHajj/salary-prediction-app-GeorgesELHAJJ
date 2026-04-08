@@ -13,6 +13,7 @@ import streamlit as st
 
 from src.dashboard.live_pipeline import process_live_prediction
 from src.db.supabase_client import get_supabase_client
+from src.config import settings
 
 
 st.set_page_config(
@@ -21,10 +22,7 @@ st.set_page_config(
     layout="wide",
 )
 
-FASTAPI_PREDICT_URL = os.getenv(
-    "FASTAPI_PREDICT_URL",
-    "http://127.0.0.1:8000/predict"
-)
+FASTAPI_PREDICT_URL = settings.FASTAPI_PREDICT_URL
 
 EXPERIENCE_LABELS = {
     "EN": "Entry-level",

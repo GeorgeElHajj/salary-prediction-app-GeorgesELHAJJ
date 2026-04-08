@@ -3,10 +3,10 @@ from typing import Any
 
 import requests
 
+from src.config import settings
 from src.db.supabase_client import get_supabase_client
 
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "llama3.2:3b"
 
 
@@ -45,7 +45,7 @@ def call_ollama_analysis(input_data: dict[str, Any], predicted_salary: float) ->
     prompt = build_live_prediction_prompt(input_data, predicted_salary)
 
     response = requests.post(
-        OLLAMA_URL,
+        f"{settings.OLLAMA_URL}/api/generate",
         json={
             "model": OLLAMA_MODEL,
             "prompt": prompt,
@@ -124,7 +124,14 @@ def process_live_prediction(api_url: str, input_data: dict[str, Any]) -> dict[st
     predicted_salary = float(prediction_result["predicted_salary_usd"])
     model_name = prediction_result["model_name"]
 
-    analysis_text = call_ollama_analysis(input_data, predicted_salary)
+    if settings.ENABLE_LIVE_OLLAMA:
+        analysis_text = call_ollama_analysis(input_data, predicted_salary)
+    else:
+        analysis_text = (
+            f"This profile is predicted to earn about ${predicted_salary:,.2f} annually. "
+            f"The estimate is mainly shaped by the selected role, experience level, employment type, "
+            f"location, and company size."
+        )
 
     supabase = get_supabase_client()
     run_id = create_run(supabase, model_name)

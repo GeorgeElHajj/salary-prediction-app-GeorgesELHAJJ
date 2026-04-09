@@ -854,8 +854,8 @@ def main():
 
     eda_df = fetch_eda_assets(supabase)
 
-    tab_story, tab_chart, tab_table, tab_eda = st.tabs(
-        ["📝 Explanation", "📊 Simple chart", "📋 Full results", "📚 Dataset insights"]
+    tab_story, tab_chart, tab_table = st.tabs(
+        ["📝 Explanation", "📊 Simple chart", "📋 Full results"]
     )
 
     with tab_story:
@@ -866,10 +866,10 @@ def main():
 
     with tab_table:
         render_predictions(filtered_df)
-       
+                 
+    tab_eda = st.tabs(["📚 Dataset insights"])[0]
     with tab_eda:
-        render_eda_tab(eda_df)    
-
+        render_eda_tab(eda_df) 
 
 if __name__ == "__main__":
     main()

@@ -67,7 +67,6 @@ COUNTRY_LABELS = {
     "HR": "Croatia",
     "HU": "Hungary",
     "IE": "Ireland",
-    "IL": "Israel",
     "IN": "India",
     "IQ": "Iraq",
     "IR": "Iran",
@@ -222,21 +221,10 @@ def format_runs_for_selectbox(runs_df: pd.DataFrame):
     return options
 
 
-def get_country_options(predictions_df: pd.DataFrame) -> list[str]:
-    countries = set()
-
-    if "employee_residence" in predictions_df.columns:
-        countries.update(predictions_df["employee_residence"].dropna().unique().tolist())
-
-    if "company_location" in predictions_df.columns:
-        countries.update(predictions_df["company_location"].dropna().unique().tolist())
-
-    country_list = sorted(code for code in countries if code in COUNTRY_LABELS)
-
-    if not country_list:
-        country_list = sorted(COUNTRY_LABELS.keys())
-
-    return country_list
+def get_country_options() -> list[str]:
+    preferred = ["US", "GB", "CA", "DE", "FR", "IN", "ES", "NL", "AU", "JP"]
+    remaining = sorted([code for code in COUNTRY_LABELS.keys() if code not in preferred])
+    return preferred + remaining
 
 
 def render_header():
@@ -257,7 +245,7 @@ def render_live_prediction(predictions_df: pd.DataFrame):
     st.markdown("## ✨ Live Salary Prediction")
     st.markdown("Fill in the details below. The app will predict the salary, generate a short AI explanation, save the result, and add it to the dashboard.")
 
-    country_options = get_country_options(predictions_df)
+    country_options = get_country_options()
     default_country_index = country_options.index("US") if "US" in country_options else 0
 
     job_title_options = JOB_TITLE_OPTIONS

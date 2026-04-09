@@ -1,11 +1,12 @@
 from pathlib import Path
 import json
 
+from dotenv import load_dotenv
 import pandas as pd
 import requests
+load_dotenv()
 
 import os
-
 API_URL = os.getenv(
     "FASTAPI_PREDICT_URL",
     "http://127.0.0.1:8000/predict"
@@ -23,7 +24,7 @@ SCENARIOS = [
         "employment_type": "FT",
         "job_title": "Data Scientist",
         "employee_residence": "US",
-        "remote_ratio": 0,
+        "remote_ratio": 50,
         "company_location": "US",
         "company_size": "S",
     },
@@ -33,7 +34,7 @@ SCENARIOS = [
         "employment_type": "FT",
         "job_title": "Data Scientist",
         "employee_residence": "US",
-        "remote_ratio": 50,
+        "remote_ratio": 100,
         "company_location": "US",
         "company_size": "M",
     },

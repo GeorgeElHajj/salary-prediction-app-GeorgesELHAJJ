@@ -1,6 +1,7 @@
 from pathlib import Path
 import uuid
 
+import joblib
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -10,6 +11,7 @@ from src.data.preprocess import preprocess_data
 
 
 DATA_PATH = Path("data/raw/ds_salaries.csv")
+MODEL_PATH = Path("artifacts/model.joblib")
 OUTPUT_DIR = Path("artifacts/eda")
 BUCKET_NAME = "eda-assets"
 
@@ -22,7 +24,32 @@ def save_chart(fig, filename: str) -> Path:
     return file_path
 
 
-def create_eda_charts(df: pd.DataFrame) -> list[dict]:
+def get_original_feature_name(feature_name: str) -> str:
+    categorical_prefixes = [
+        "experience_level",
+        "employment_type",
+        "job_title",
+        "employee_residence",
+        "company_location",
+        "company_size",
+    ]
+
+    if feature_name.startswith("cat__"):
+        remainder = feature_name.replace("cat__", "", 1)
+
+        for prefix in categorical_prefixes:
+            if remainder.startswith(prefix + "_"):
+                return prefix
+
+        return remainder.split("_")[0]
+
+    if feature_name.startswith("num__"):
+        return feature_name.replace("num__", "", 1)
+
+    return feature_name
+
+
+def create_eda_charts(df: pd.DataFrame, pipeline) -> list[dict]:
     charts = []
 
     # 1. Salary by experience level
@@ -98,6 +125,39 @@ def create_eda_charts(df: pd.DataFrame) -> list[dict]:
         "file_path": path,
     })
 
+    # 5. Feature importance by original feature
+    preprocessor = pipeline.named_steps["preprocessor"]
+    model = pipeline.named_steps["model"]
+
+    feature_names = preprocessor.get_feature_names_out()
+    importances = model.feature_importances_
+
+    importance_df = pd.DataFrame({
+        "feature": feature_names,
+        "importance": importances,
+    })
+
+    importance_df["original_feature"] = importance_df["feature"].apply(get_original_feature_name)
+
+    grouped_importance = (
+        importance_df.groupby("original_feature")["importance"]
+        .sum()
+        .sort_values()
+    )
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    grouped_importance.plot(kind="barh", ax=ax)
+    ax.set_title("Feature Importance by Original Feature")
+    ax.set_xlabel("Importance")
+    ax.set_ylabel("Feature")
+    path = save_chart(fig, "feature_importance_by_original_feature.png")
+    charts.append({
+        "title": "Feature Importance by Original Feature",
+        "description": "Shows which input features have the strongest effect on predicted salary.",
+        "chart_type": "barh",
+        "file_path": path,
+    })
+
     return charts
 
 
@@ -108,14 +168,21 @@ def upload_file_to_storage(supabase, file_path: Path) -> str:
         supabase.storage.from_(BUCKET_NAME).upload(
             path=unique_name,
             file=f,
-            file_options={"content-type": "image/png"}
+            file_options={"content-type": "image/png"},
         )
 
     public_url = supabase.storage.from_(BUCKET_NAME).get_public_url(unique_name)
     return public_url
 
 
-def insert_eda_asset(supabase, title: str, description: str, chart_type: str, file_name: str, public_url: str):
+def insert_eda_asset(
+    supabase,
+    title: str,
+    description: str,
+    chart_type: str,
+    file_name: str,
+    public_url: str,
+):
     supabase.table("eda_assets").insert({
         "title": title,
         "description": description,
@@ -130,8 +197,11 @@ def main():
     raw_df = load_dataset(str(DATA_PATH))
     _, _, processed_df = preprocess_data(raw_df)
 
+    print("Loading trained model...")
+    pipeline = joblib.load(MODEL_PATH)
+
     print("Creating EDA charts...")
-    charts = create_eda_charts(processed_df)
+    charts = create_eda_charts(processed_df, pipeline)
 
     supabase = get_supabase_client()
 

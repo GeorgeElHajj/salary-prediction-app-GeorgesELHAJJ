@@ -1,0 +1,7 @@
+Based on the provided summary data, several key observations can be made about the predicted salaries across different experience levels.
+
+The biggest salary differences are observed between 'EX' (Experienced) and other experience levels. The maximum salary is 232359.38, which is more than twice as high as the average salary for any other experience level. This indicates that having extensive experience leads to significantly higher salaries. In contrast, 'EN' (Entry-level) and 'MI' (Mid-level) have lower predicted salaries, with a maximum of 73078.0 and 87416.24, respectively.
+
+The most notable insight from the predictions is the large gap in salary potential between experienced professionals and those in other experience levels. This suggests that having extensive experience can lead to substantial increases in earning potential.
+
+For someone exploring data careers, one practical takeaway is to focus on acquiring a wide range of skills across multiple experience levels. While being an 'EX' professional may offer higher salaries, it often requires significant time and effort to gain such experience. Emphasizing both technical skills (e.g., programming languages) and soft skills (e.g., communication, teamwork) can make individuals more versatile and attractive to potential employers, regardless of their specific role or experience level.

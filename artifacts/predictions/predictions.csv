@@ -1,0 +1,11 @@
+work_year,experience_level,employment_type,job_title,employee_residence,remote_ratio,company_location,company_size,predicted_salary_usd,model_name,status,error_message
+2022,EN,FT,Data Scientist,US,50,US,S,87033.33,DecisionTreeRegressor,success,
+2022,MI,FT,Data Scientist,US,100,US,M,126047.6,DecisionTreeRegressor,success,
+2022,SE,FT,Data Scientist,US,100,US,L,172425.51,DecisionTreeRegressor,success,
+2022,EX,FT,Data Scientist,US,100,US,L,232359.38,DecisionTreeRegressor,success,
+2022,SE,FT,Machine Learning Engineer,US,100,US,L,172425.51,DecisionTreeRegressor,success,
+2022,MI,FT,Data Analyst,GB,50,GB,M,47235.0,DecisionTreeRegressor,success,
+2022,EN,FT,Research Scientist,DE,0,DE,S,59122.67,DecisionTreeRegressor,success,
+2022,SE,FT,Data Engineer,US,50,US,M,143954.45,DecisionTreeRegressor,success,
+2022,MI,FT,Machine Learning Scientist,CA,100,CA,L,88966.12,DecisionTreeRegressor,success,
+2022,SE,FT,Analytics Engineer,US,100,US,M,172425.51,DecisionTreeRegressor,success,

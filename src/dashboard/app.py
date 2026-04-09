@@ -363,7 +363,6 @@ def fetch_analysis(supabase, run_id: int):
     )
     return response.data[0] if response.data else None
 
-
 def format_runs_for_selectbox(runs_df: pd.DataFrame):
     options = []
     for _, row in runs_df.iterrows():
@@ -774,6 +773,32 @@ def render_predictions(filtered_df: pd.DataFrame):
 
     st.dataframe(df, use_container_width=True, hide_index=True)
 
+def fetch_eda_assets(supabase) -> pd.DataFrame:
+    response = (
+        supabase.table("eda_assets")
+        .select("*")
+        .order("created_at", desc=False)
+        .execute()
+    )
+
+    if not response.data:
+        return pd.DataFrame()
+
+    return pd.DataFrame(response.data)
+
+def render_eda_tab(eda_df: pd.DataFrame):
+    st.markdown("### Dataset Insights")
+
+    if eda_df.empty:
+        st.info("No EDA charts are available yet.")
+        return
+
+    for _, row in eda_df.iterrows():
+        st.markdown(f"#### {row['title']}")
+        if row.get("description"):
+            st.caption(row["description"])
+        st.image(row["public_url"], use_container_width=True)
+        st.markdown("---")
 
 # ─── Main ────────────────────────────────────────────────────────────────────
 
@@ -827,8 +852,10 @@ def main():
     filtered_df = render_filters(predictions_df)
     render_run_overview(selected_run, filtered_df, analysis)
 
-    tab_story, tab_chart, tab_table = st.tabs(
-        ["📝 Explanation", "📊 Simple chart", "📋 Full results"]
+    eda_df = fetch_eda_assets(supabase)
+
+    tab_story, tab_chart, tab_table, tab_eda = st.tabs(
+        ["📝 Explanation", "📊 Simple chart", "📋 Full results", "📚 Dataset insights"]
     )
 
     with tab_story:
@@ -839,6 +866,9 @@ def main():
 
     with tab_table:
         render_predictions(filtered_df)
+       
+    with tab_eda:
+        render_eda_tab(eda_df)    
 
 
 if __name__ == "__main__":

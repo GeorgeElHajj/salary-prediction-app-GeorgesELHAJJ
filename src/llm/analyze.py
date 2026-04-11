@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import json
 
@@ -10,7 +11,7 @@ PREDICTIONS_PATH = Path("artifacts/predictions/predictions.csv")
 OUTPUT_DIR = Path("artifacts/analysis")
 CHART_DIR = Path("artifacts/charts")
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
 MODEL_NAME = "llama3.2:3b"
 
 

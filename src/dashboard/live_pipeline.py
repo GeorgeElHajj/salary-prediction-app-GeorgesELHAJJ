@@ -103,7 +103,7 @@ def call_ollama_analysis(input_data: dict[str, Any], predicted_salary: float) ->
     prompt = build_live_prediction_prompt(input_data, predicted_salary)
 
     response = requests.post(
-        f"{settings.OLLAMA_URL}/api/generate",
+        settings.OLLAMA_URL,
         json={
             "model": OLLAMA_MODEL,
             "prompt": prompt,
